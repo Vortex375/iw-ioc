@@ -14,19 +14,11 @@ export class ComponentRegistry {
   private readonly componentNames: Set<string | symbol> = new Set();
   private readonly componentTypeToNames: Map<Newable<any>, Array<string | symbol>> = new Map();
 
-  registerType(type: Newable<any>, givenName?: string | symbol): string | symbol {
-    let name: string | symbol;
-    if (givenName !== undefined) {
-      name = givenName;
-    } else {
-      name = type.name;
-      let i = 0;
-      while (this.componentNames.has(name)) {
-        name = `${type.name}$${i++}`;
-      }
-    }
-    if (this.componentNames.has(name)) {
-      throw new Error(`Duplicate component with name ${String(name)} registered.`);
+  registerType(type: Newable<any>): string {
+    let name = type.name;
+    let i = 0;
+    while (this.componentNames.has(name)) {
+      name = `${type.name}$${i++}`;
     }
     this.componentNames.add(name);
 

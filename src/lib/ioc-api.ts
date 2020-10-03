@@ -2,7 +2,7 @@ import { Newable } from 'ts-essentials';
 import { ComponentRegistry } from './component-registry';
 import * as awilix from 'awilix';
 import { getConstructorParameters, getLifetime } from './ioc-annotations';
-import { map } from 'lodash';
+import { forEach, map } from 'lodash';
 
 function componentFactory(type: Newable<any>) {
   return (cradle: any) => {
@@ -24,12 +24,15 @@ export class IOC {
     return ROOT_CONTAINER;
   }
 
-  static registerComponent(type: Newable<any>, givenName?: string | symbol) {
-    const name = COMPONENT_REGISTRY.registerType(type, givenName);
+  static registerComponent(type: Newable<any>, ...aliases: Array<string | symbol>) {
+    const name = COMPONENT_REGISTRY.registerType(type);
     ROOT_CONTAINER.register(name, awilix.asFunction(componentFactory(type), {
       lifetime: getLifetime(type),
       injector: (container) => ({ container })
     }));
+    forEach(aliases, alias => {
+      ROOT_CONTAINER.register(alias, awilix.aliasTo(name));
+    });
   }
 
   static get<T>(nameOrType: string | symbol | Newable<T>, container = ROOT_CONTAINER): T | undefined {

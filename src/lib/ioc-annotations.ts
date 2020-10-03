@@ -7,13 +7,9 @@ import { forEach } from 'lodash';
 const LIFETIME = Symbol();
 const CONSTRUCTOR_PARAMETERS = Symbol();
 
-export function Component(... tokens: Array<string | symbol>) {
+export function Component(... aliases: Array<string | symbol>) {
   return (type: Newable<any>) => {
-    if (tokens.length === 0) {
-      IOC.registerComponent(type);
-    } else {
-      tokens.forEach((token) => IOC.registerComponent(type, token));
-    }
+    IOC.registerComponent(type, ...aliases);
   };
 }
 
